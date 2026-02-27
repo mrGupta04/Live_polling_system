@@ -1,1 +1,0 @@
-{"root":["./src/app.tsx","./src/api.ts","./src/config.ts","./src/main.tsx","./src/types.ts","./src/components/brandpill.tsx","./src/components/floatingpanel.tsx","./src/components/pollresults.tsx","./src/hooks/usepolltimer.ts","./src/hooks/usesocket.ts","./src/pages/studentpage.tsx","./src/pages/teacherpage.tsx"],"version":"5.9.3"}

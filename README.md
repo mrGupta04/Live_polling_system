@@ -28,6 +28,7 @@ Backend runs at `http://localhost:4000`.
 ```bash
 cd client
 npm install
+cp .env.example .env
 npm run dev
 ```
 
@@ -56,5 +57,9 @@ Frontend runs at `http://localhost:5173`.
 ## Deployment Notes
 
 Host backend and frontend separately (Render/Railway/Vercel etc.), then:
-- Update `CLIENT_ORIGIN` in backend `.env`
-- Update `API_BASE` and `SOCKET_URL` in `client/src/config.ts`
+- Backend (`server/.env`)
+	- `MONGO_URI=<your mongodb connection string>`
+	- `CLIENT_ORIGIN=<your deployed frontend URL>`
+- Frontend (`client/.env`)
+	- `VITE_API_BASE=<your deployed backend URL>/api`
+	- `VITE_SOCKET_URL=<your deployed backend URL>`
