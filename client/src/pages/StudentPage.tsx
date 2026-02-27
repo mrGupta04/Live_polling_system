@@ -105,7 +105,10 @@ export function StudentPage({ socket, connected }: StudentPageProps) {
     socket.on("poll:updated", onUpdated);
     socket.on("poll:completed", onCompleted);
 
-    const onKicked = (payload: { message?: string }) => {
+    const onKicked = (payload: { message?: string; sessionId?: string }) => {
+      if (payload?.sessionId && payload.sessionId !== sessionId) {
+        return;
+      }
       handleKicked(payload?.message || "You were removed by the teacher");
     };
     socket.on("room:kicked", onKicked);
@@ -124,7 +127,14 @@ export function StudentPage({ socket, connected }: StudentPageProps) {
     }
 
     socket.emit("student:register", { sessionId, name: name.trim() }, (response: any) => {
-      if (!response?.ok || !response.state) {
+      if (!response?.ok) {
+        if (String(response?.message || "").toLowerCase().includes("removed")) {
+          handleKicked(response?.message || "You were removed by the teacher");
+        }
+        return;
+      }
+
+      if (!response.state) {
         return;
       }
 
@@ -162,6 +172,10 @@ export function StudentPage({ socket, connected }: StudentPageProps) {
       setRegistering(false);
 
       if (!response?.ok) {
+        if (String(response?.message || "").toLowerCase().includes("removed")) {
+          handleKicked(response?.message || "You were removed by the teacher");
+          return;
+        }
         setError(response?.message || "Registration failed");
         return;
       }

@@ -147,8 +147,16 @@ export class PollSocketHandler {
         }
 
         const kickedSocket = this.io.sockets.sockets.get(result.socketId);
-        kickedSocket?.emit("room:kicked", { message: "You were removed by the teacher" });
-        kickedSocket?.disconnect(true);
+        const kickedPayload = {
+          message: "You were removed by the teacher",
+          sessionId: parsed.sessionId
+        };
+
+        kickedSocket?.emit("room:kicked", kickedPayload);
+        this.io.emit("room:kicked", kickedPayload);
+        if (kickedSocket) {
+          setTimeout(() => kickedSocket.disconnect(true), 300);
+        }
 
         this.emitParticipants();
         ack?.({ ok: true });
