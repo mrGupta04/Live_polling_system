@@ -996,17 +996,21 @@ button:disabled {
   position: fixed;
   right: 24px;
   bottom: 24px;
-  width: 54px;
-  height: 54px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   border: none;
-  background: linear-gradient(90deg, #6d58d9 0%, #4f62d6 100%);
+  background: #5f68d6;
   color: #fff;
-  font-size: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 22;
+}
+
+.chat-fab-icon {
+  width: 30px;
+  height: 30px;
 }
 
 @media (max-width: 1024px) {

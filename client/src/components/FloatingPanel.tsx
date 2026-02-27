@@ -175,7 +175,16 @@ export function FloatingPanel({ socket, teacherMode = false, connected, sessionI
       )}
 
       <button className="chat-fab" onClick={() => setOpen((value) => !value)} aria-label="Open chat panel">
-        💬
+        <svg className="chat-fab-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M7 4.5h10a2.5 2.5 0 0 1 2.5 2.5v8.2a2.3 2.3 0 0 1-2.3 2.3h-7.1l-3.6 3.3a.5.5 0 0 1-.84-.37v-2.93A2.73 2.73 0 0 1 3 14.8V7a2.5 2.5 0 0 1 2.5-2.5H7z"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
       </button>
     </>
   );
