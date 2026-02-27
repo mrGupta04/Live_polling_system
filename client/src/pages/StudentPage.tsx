@@ -233,7 +233,9 @@ export function StudentPage({ socket, connected }: StudentPageProps) {
     );
   }
 
-  if (!activePoll && !latestCompletedPoll) {
+  const showCompletedResults = Boolean(!activePoll && submitted && latestCompletedPoll);
+
+  if (!activePoll && !showCompletedResults) {
     return (
       <main className="wait-screen">
         <div className="wait-body">
@@ -252,7 +254,7 @@ export function StudentPage({ socket, connected }: StudentPageProps) {
     );
   }
 
-  const displayPoll = activePoll || latestCompletedPoll;
+  const displayPoll = activePoll || (showCompletedResults ? latestCompletedPoll : null);
   if (!displayPoll) {
     return null;
   }
@@ -298,7 +300,7 @@ export function StudentPage({ socket, connected }: StudentPageProps) {
           </button>
         )}
 
-        {(submitted || remaining === 0 || latestCompletedPoll) && <p className="wait-text">Wait for the teacher to ask a new question</p>}
+        {(submitted || remaining === 0 || showCompletedResults) && <p className="wait-text">Wait for the teacher to ask a new question</p>}
       </section>
 
       <FloatingPanel

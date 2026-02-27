@@ -38,7 +38,7 @@ export function TeacherPage({ socket, connected }: TeacherPageProps) {
       try {
         const state = await fetchPollState();
         setActivePoll(state.activePoll);
-        setLatestCompletedPoll(state.latestCompletedPoll);
+        setLatestCompletedPoll(state.activePoll ? state.latestCompletedPoll : null);
         const historyData = await fetchPollHistory();
         setHistory(historyData);
       } catch (err) {

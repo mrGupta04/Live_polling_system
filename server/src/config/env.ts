@@ -8,7 +8,7 @@ export const env = {
     process.env.MONGO_URI ||
     process.env.MONGODB_URI ||
     "mongodb://127.0.0.1:27017/live_polling",
-  clientOrigins: (process.env.CLIENT_ORIGIN || "http://localhost:5173,http://localhost:5174")
+  clientOrigins: (process.env.CLIENT_ORIGIN || "http://localhost:5173")
     .split(",")
     .map((origin) => origin.trim())
     .filter(Boolean)
