@@ -153,7 +153,6 @@ export class PollSocketHandler {
         };
 
         kickedSocket?.emit("room:kicked", kickedPayload);
-        this.io.emit("room:kicked", kickedPayload);
         if (kickedSocket) {
           setTimeout(() => kickedSocket.disconnect(true), 300);
         }
