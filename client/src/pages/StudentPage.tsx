@@ -23,6 +23,7 @@ function getTabSessionId() {
 export function StudentPage({ socket, connected }: StudentPageProps) {
   const [name, setName] = useState(sessionStorage.getItem("student_name") || "");
   const [registered, setRegistered] = useState(Boolean(sessionStorage.getItem("student_name")));
+  const [initializing, setInitializing] = useState(true);
   const [kickedOut, setKickedOut] = useState(false);
   const [registering, setRegistering] = useState(false);
   const [activePoll, setActivePoll] = useState<Poll | null>(null);
@@ -43,18 +44,6 @@ export function StudentPage({ socket, connected }: StudentPageProps) {
     setKickedOut(true);
   };
 
-  if (kickedOut) {
-    return (
-      <main className="onboarding-screen kicked-screen">
-        <section className="kicked-card">
-          <BrandPill />
-          <h1 className="kicked-title">You’ve been Kicked out !</h1>
-          <p className="kicked-subtitle">Looks like the teacher had removed you from the poll system .Please Try again sometime.</p>
-        </section>
-      </main>
-    );
-  }
-
   const applyRecoveredState = (state: { activePoll: Poll | null; latestCompletedPoll: Poll | null; studentVoteOptionId?: string | null }) => {
     setActivePoll(state.activePoll);
     setLatestCompletedPoll(state.latestCompletedPoll);
@@ -73,11 +62,22 @@ export function StudentPage({ socket, connected }: StudentPageProps) {
 
   useEffect(() => {
     const restore = async () => {
+      const storedName = sessionStorage.getItem("student_name");
+      if (!storedName) {
+        setRegistered(false);
+        setInitializing(false);
+        return;
+      }
+
       try {
         const state = await fetchPollState();
         applyRecoveredState(state);
+        const shouldResumeSession = Boolean(state.activePoll);
+        setRegistered(shouldResumeSession);
       } catch {
-        return;
+        setRegistered(false);
+      } finally {
+        setInitializing(false);
       }
     };
 
@@ -105,11 +105,13 @@ export function StudentPage({ socket, connected }: StudentPageProps) {
     socket.on("poll:updated", onUpdated);
     socket.on("poll:completed", onCompleted);
 
-    const onKicked = (payload: { message?: string; sessionId?: string }) => {
+    const onKicked = (payload: { message?: string; sessionId?: string }, ack?: () => void) => {
       if (payload?.sessionId && payload.sessionId !== sessionId) {
+        ack?.();
         return;
       }
       handleKicked(payload?.message || "You were removed by the teacher");
+      ack?.();
     };
     socket.on("room:kicked", onKicked);
 
@@ -224,6 +226,29 @@ export function StudentPage({ socket, connected }: StudentPageProps) {
       }
     );
   };
+
+  if (kickedOut) {
+    return (
+      <main className="onboarding-screen kicked-screen">
+        <section className="kicked-card">
+          <BrandPill />
+          <h1 className="kicked-title">You’ve been Kicked out !</h1>
+          <p className="kicked-subtitle">Looks like the teacher had removed you from the poll system .Please Try again sometime.</p>
+        </section>
+      </main>
+    );
+  }
+
+  if (initializing) {
+    return (
+      <main className="onboarding-screen">
+        <section className="student-start-card">
+          <BrandPill />
+          <p className="status-text status-warn">Loading session...</p>
+        </section>
+      </main>
+    );
+  }
 
   if (!registered) {
     return (

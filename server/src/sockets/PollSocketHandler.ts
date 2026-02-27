@@ -152,9 +152,21 @@ export class PollSocketHandler {
           sessionId: parsed.sessionId
         };
 
-        kickedSocket?.emit("room:kicked", kickedPayload);
         if (kickedSocket) {
-          setTimeout(() => kickedSocket.disconnect(true), 300);
+          let disconnected = false;
+          const disconnectOnce = () => {
+            if (disconnected) {
+              return;
+            }
+            disconnected = true;
+            kickedSocket.disconnect(true);
+          };
+
+          const fallbackTimer = setTimeout(disconnectOnce, 1200);
+          kickedSocket.emit("room:kicked", kickedPayload, () => {
+            clearTimeout(fallbackTimer);
+            disconnectOnce();
+          });
         }
 
         this.emitParticipants();

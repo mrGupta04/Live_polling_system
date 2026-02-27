@@ -46,11 +46,13 @@ export function FloatingPanel({ socket, teacherMode = false, connected, sessionI
       setMessages((prev) => [...prev, message].slice(-80));
     };
 
-    const onKickedHandler = (payload: { message?: string; sessionId?: string }) => {
+    const onKickedHandler = (payload: { message?: string; sessionId?: string }, ack?: () => void) => {
       if (payload?.sessionId && sessionId && payload.sessionId !== sessionId) {
+        ack?.();
         return;
       }
       onKickedOut?.(payload?.message || "You were removed by the teacher");
+      ack?.();
     };
 
     socket.on("participants:update", onParticipantsUpdate);
