@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Socket } from "socket.io-client";
 import { ChatMessage, Participant } from "../types";
 
@@ -16,6 +16,7 @@ export function FloatingPanel({ socket, teacherMode = false, connected, sessionI
   const [tab, setTab] = useState<"chat" | "participants">(teacherMode ? "participants" : "chat");
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messageText, setMessageText] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const myRole = useMemo<"teacher" | "student">(() => (teacherMode ? "teacher" : "student"), [teacherMode]);
@@ -68,6 +69,32 @@ export function FloatingPanel({ socket, teacherMode = false, connected, sessionI
     });
   };
 
+  const sendMessage = (event: FormEvent) => {
+    event.preventDefault();
+    if (!messageText.trim() || !connected) {
+      return;
+    }
+
+    const text = messageText.trim();
+    setMessageText("");
+    setError(null);
+
+    socket.emit(
+      "chat:send",
+      {
+        text,
+        sessionId,
+        senderName: displayName || (teacherMode ? "Teacher" : "Student"),
+        role: myRole
+      },
+      (response: any) => {
+        if (!response?.ok) {
+          setError(response?.message || "Unable to send message");
+        }
+      }
+    );
+  };
+
   return (
     <>
       {open && (
@@ -86,19 +113,34 @@ export function FloatingPanel({ socket, teacherMode = false, connected, sessionI
 
           {tab === "chat" ? (
             <div className="panel-chat">
-              {messages.length === 0 ? (
-                <p className="muted">No messages yet.</p>
-              ) : (
-                messages.map((message) => {
-                  const isMine = teacherMode ? message.role === "teacher" : message.senderName === displayName;
-                  return (
-                    <div key={message.id}>
-                      <p className={isMine ? "chat-name right" : "chat-name"}>{message.senderName}</p>
-                      <div className={isMine ? "chat-bubble right" : "chat-bubble left"}>{message.text}</div>
-                    </div>
-                  );
-                })
-              )}
+              <div className="chat-messages">
+                {messages.length === 0 ? (
+                  <p className="muted">No messages yet.</p>
+                ) : (
+                  messages.map((message) => {
+                    const isMine = teacherMode ? message.role === "teacher" : message.senderName === displayName;
+                    return (
+                      <div key={message.id}>
+                        <p className={isMine ? "chat-name right" : "chat-name"}>{message.senderName}</p>
+                        <div className={isMine ? "chat-bubble right" : "chat-bubble left"}>{message.text}</div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+
+              <form className="chat-compose" onSubmit={sendMessage}>
+                <input
+                  value={messageText}
+                  onChange={(event) => setMessageText(event.target.value)}
+                  className="chat-input"
+                  placeholder="Type a message"
+                  maxLength={300}
+                />
+                <button type="submit" className="chat-send-btn" disabled={!connected || !messageText.trim()}>
+                  Send
+                </button>
+              </form>
             </div>
           ) : (
             <div className={teacherMode ? "panel-participants with-action" : "panel-participants"}>

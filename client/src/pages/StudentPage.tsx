@@ -105,10 +105,16 @@ export function StudentPage({ socket, connected }: StudentPageProps) {
     socket.on("poll:updated", onUpdated);
     socket.on("poll:completed", onCompleted);
 
+    const onKicked = (payload: { message?: string }) => {
+      handleKicked(payload?.message || "You were removed by the teacher");
+    };
+    socket.on("room:kicked", onKicked);
+
     return () => {
       socket.off("poll:created", onCreated);
       socket.off("poll:updated", onUpdated);
       socket.off("poll:completed", onCompleted);
+      socket.off("room:kicked", onKicked);
     };
   }, [socket]);
 

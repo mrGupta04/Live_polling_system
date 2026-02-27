@@ -842,8 +842,8 @@ button:disabled {
   position: fixed;
   right: 16px;
   top: 162px;
-  width: 360px;
-  min-height: 300px;
+  width: 460px;
+  min-height: 420px;
   background: #fff;
   border: 1px solid #d8d8dd;
   border-radius: 4px;
@@ -877,6 +877,15 @@ button:disabled {
   padding: 12px;
   display: grid;
   gap: 8px;
+  grid-template-rows: 1fr auto;
+  min-height: 360px;
+}
+
+.chat-messages {
+  overflow: auto;
+  display: grid;
+  gap: 8px;
+  align-content: start;
 }
 
 .chat-name {
@@ -907,6 +916,29 @@ button:disabled {
   margin-left: auto;
   background: #7f66df;
   color: #fff;
+}
+
+.chat-compose {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}
+
+.chat-input {
+  border: 1px solid #d5d5da;
+  border-radius: 6px;
+  min-height: 34px;
+  padding: 6px 10px;
+}
+
+.chat-send-btn {
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #7a61df 0%, #5864d5 100%);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 68px;
 }
 
 .panel-participants {

@@ -302,7 +302,6 @@ export function TeacherPage({ socket, connected }: TeacherPageProps) {
         )}
       </section>
 
-      {!activePoll && latestCompletedPoll && !showHistory && <p className="wait-text">Wait for the teacher to ask a new question</p>}
       <FloatingPanel socket={socket} teacherMode connected={connected} displayName="Teacher" />
     </main>
   );
