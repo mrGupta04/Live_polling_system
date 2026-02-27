@@ -216,7 +216,12 @@ export class PollService {
   async getHistory(): Promise<PollResult[]> {
     try {
       await this.completeExpiredPollIfNeeded();
-      const polls = await PollModel.find({ status: "completed" }).sort({ startedAt: -1 }).limit(30);
+      const polls = await PollModel.find({
+        status: "completed",
+        question: { $not: /^(E2E Poll|Verify Poll)\b/i }
+      })
+        .sort({ startedAt: -1 })
+        .limit(30);
 
       return Promise.all(polls.map((poll) => this.getPollResult(poll._id.toString())));
     } catch (error) {
